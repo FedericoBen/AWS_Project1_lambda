@@ -1,4 +1,4 @@
-exports.handler = () => {
+exports.handler = async (event) => {
   const newDate = `Esta es la fecha actual: ${new Date().toISOString()}`;
   console.log(newDate);
   return {
