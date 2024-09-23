@@ -1,4 +1,4 @@
-const handler = () => {
+exports.handler = () => {
   const newDate = `Esta es la fecha actual: ${new Date().toISOString()}`;
   console.log(newDate);
   return {
@@ -6,5 +6,3 @@ const handler = () => {
     body: JSON.stringify(newDate),
   };
 };
-
-export default handler;
