@@ -62,5 +62,5 @@ jobs:
             --function-name project1-lambdaUsers-6g8XUlyjMCJa \
             --s3-bucket ${{ env.S3_BUCKET }} \
             --s3-key function.zip \
-            --zip-file function.zip \
+            --zip-file fileb://function.zip \
             --region ${{ env.AWS_REGION }}
