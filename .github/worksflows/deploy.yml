@@ -1,0 +1,66 @@
+name: Deploy AWS SAM Application
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+
+env:
+  AWS_REGION: us-east-1 # Cambia esto si usas otra región
+  S3_BUCKET: s3-project-1-test-fede-admin
+  STACK_NAME: project1
+  SAM_TEMPLATE: template.yml
+  PIPELINE_EXECUTION_ROLE: arn:aws:iam::532353884571:role/PIPELINE_EXECUTION_ROLE
+
+jobs:
+  deploy-lambda-dev:
+    if: github.event_name == 'push' && startsWith(github.ref,'refs/heads/develop')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read # This is required for actions/checkout
+
+    steps:
+      # Step 1: Checkout the code
+      - name: STEP1-Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'  # O la versión que estés usando
+
+      - name: Install dependencies
+        run: |
+          cd function
+          npm install
+
+      - name: Package Lambda
+        run: |
+          zip -r function.zip function/
+          
+      #Step 4: Assume the testing pipeline user role
+      - name: STEP4-Assume the testing pipeline user role
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: feature-deployment
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+      
+      - name: Update Lambda Function Code
+        run: |
+          aws lambda update-function-code \
+            --function-name project1-lambdaUsers-6g8XUlyjMCJa \
+            --s3-bucket ${{ env.S3_BUCKET }} \
+            --s3-key function.zip \
+            --zip-file function.zip \
+            --region ${{ env.AWS_REGION }}
