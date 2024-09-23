@@ -42,7 +42,8 @@ jobs:
 
       - name: Package Lambda
         run: |
-          zip -r -j function.zip function/*
+          cd function
+          zip -r ../function.zip ./*
           
       #Step 4: Assume the testing pipeline user role
       - name: STEP4-Assume the testing pipeline user role
