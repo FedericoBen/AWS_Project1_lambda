@@ -9,9 +9,6 @@ const ddbDocClient = DynamoDBDocumentClient.from(client);
 exports.getUsers = async (event) => {
   const getParams = {
     TableName: TABLE_NAME,
-    Key: {
-      id: event.id, // El ID del elemento que deseas obtener
-    },
   };
 
   try {
