@@ -11,7 +11,7 @@ exports.handler = async (event) => {
     HANDLER_EVENTS[event.operation]?.(event) ?? {
       statusCode: 400,
       body: JSON.stringify({
-        message: `Operación no soportada. ${event.operation}`,
+        message: `Operación no soportada. ${event}`,
       }),
     }
   );
