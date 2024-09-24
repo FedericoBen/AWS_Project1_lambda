@@ -7,11 +7,13 @@ const HANDLER_EVENTS = {
 };
 
 exports.handler = async (event) => {
+  console.log(`Event-Coming : ${JSON.stringify(event)}`);
+  
   return (
     HANDLER_EVENTS[event.httpMethod]?.(event) ?? {
       statusCode: 400,
       body: JSON.stringify({
-        message: `Operación no soportada. ${event.body?.operation}, ${event.httpMethod}`,
+        message: `Operación no soportada. ${event.httpMethod}`,
       }),
     }
   );
