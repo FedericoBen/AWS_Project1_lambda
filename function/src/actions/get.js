@@ -1,5 +1,8 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { ScanCommand, DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
+const {
+  ScanCommand,
+  DynamoDBDocumentClient,
+} = require("@aws-sdk/lib-dynamodb");
 
 const { TABLE_NAME } = require("../config");
 
@@ -18,6 +21,12 @@ exports.getUsers = async (event) => {
     if (data.Items) {
       return {
         statusCode: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers": "*",
+        },
         body: JSON.stringify({
           message: "Items obtenidos correctamente",
           item: data.Items,
