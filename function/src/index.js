@@ -1,8 +1,18 @@
+const { getUsers } = require("./actions/get");
+const { putUser } = require("./actions/put");
+
+const HANDLER_EVENTS = {
+  PUT: putUser,
+  GET: getUsers,
+};
+
 exports.handler = async (event) => {
-  const newDate = `Esta es la fecha actual: ${new Date().toISOString()}`;
-  console.log(newDate);
-  return {
-    statusCode: 200,
-    body: JSON.stringify(newDate),
-  };
+  return (
+    HANDLER_EVENTS[event.operation]?.(event) ?? {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: "Operación no soportada.",
+      }),
+    }
+  );
 };
