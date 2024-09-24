@@ -10,8 +10,6 @@ exports.putUser = async (event) => {
   const item = {
     id: event.id, // Clave primaria o ID único
     name: event.name,
-    description: event.description,
-    createdAt: new Date().toISOString(),
   };
 
   const putParams = {

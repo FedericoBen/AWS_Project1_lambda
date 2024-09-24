@@ -18,19 +18,19 @@ exports.getUsers = async (event) => {
     // Ejecutar el comando GetCommand para obtener el item de la tabla DynamoDB
     const data = await ddbDocClient.send(new ScanCommand(getParams));
 
-    if (data.Item) {
+    if (data.Items) {
       return {
         statusCode: 200,
         body: JSON.stringify({
-          message: "Item obtenido correctamente",
-          item: data.Item,
+          message: "Items obtenidos correctamente",
+          item: data.Items,
         }),
       };
     }
     return {
       statusCode: 404,
       body: JSON.stringify({
-        message: "Item no encontrado",
+        message: "Items no encontrado",
       }),
     };
   } catch (error) {

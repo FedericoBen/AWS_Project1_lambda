@@ -2,8 +2,8 @@ const { getUsers } = require("./actions/get");
 const { putUser } = require("./actions/put");
 
 const HANDLER_EVENTS = {
-  PUT: putUser,
-  GET: getUsers,
+  "PUT": putUser,
+  "GET": getUsers,
 };
 
 exports.handler = async (event) => {
