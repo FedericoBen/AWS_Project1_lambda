@@ -7,15 +7,15 @@ const client = new DynamoDBClient({});
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
 exports.putUser = async (event) => {
-  const body = JSON.parse(event.body);
-  const item = body.newItem;
-
-  const putParams = {
-    TableName: TABLE_NAME,
-    Item: item,
-  };
-
-  try {
+    
+    try {
+      const body = JSON.parse(event.body);
+      const item = body.newItem;
+    
+      const putParams = {
+        TableName: TABLE_NAME,
+        Item: item,
+      };
     // Ejecutar el comando PutCommand para insertar el item en la tabla DynamoDB
     await ddbDocClient.send(new PutCommand(putParams));
     return {
