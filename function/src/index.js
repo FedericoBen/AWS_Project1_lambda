@@ -8,10 +8,10 @@ const HANDLER_EVENTS = {
 
 exports.handler = async (event) => {
   return (
-    HANDLER_EVENTS[event.operation]?.(event) ?? {
+    HANDLER_EVENTS[event.body.operation]?.(event) ?? {
       statusCode: 400,
       body: JSON.stringify({
-        message: `Operación no soportada. ${event}`,
+        message: `Operación no soportada. ${event.body.operation}`,
       }),
     }
   );
