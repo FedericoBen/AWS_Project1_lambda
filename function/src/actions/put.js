@@ -7,7 +7,8 @@ const client = new DynamoDBClient({});
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
 exports.putUser = async (event) => {
-  const item = event.body.newItem;
+  const body = JSON.parse(event.body);
+  const item = body.newItem;
 
   const putParams = {
     TableName: TABLE_NAME,
