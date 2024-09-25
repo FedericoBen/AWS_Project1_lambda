@@ -9,7 +9,7 @@ const HANDLER_EVENTS = {
 exports.handler = async (event) => {
   console.log(`Event-Coming : ${JSON.stringify(event)}`);
 
-  const responseAction = HANDLER_EVENTS[event.httpMethod]?.(event) ?? {
+  const responseAction = await HANDLER_EVENTS[event.httpMethod]?.(event) ?? {
     statusCode: 400,
     body: JSON.stringify({
       message: `Operación no soportada. ${event.httpMethod}`,
