@@ -12,19 +12,20 @@ on:
 
 env:
   AWS_REGION: us-east-1 # Cambia esto si usas otra región
-  S3_BUCKET: s3-project-1-test-fede-admin
+  S3_BUCKET: project1-lambda-code-532353884571
   STACK_NAME: project1
   SAM_TEMPLATE: template.yml
   PIPELINE_EXECUTION_ROLE: arn:aws:iam::532353884571:role/PIPELINE_EXECUTION_ROLE
 
 jobs:
-  deploy-lambda-dev:
+
+  #Comprimir el codigo de la lambda y subirlo a s3
+  build-s3:
     if: github.event_name == 'push' && startsWith(github.ref,'refs/heads/develop')
     runs-on: ubuntu-latest
     permissions:
       id-token: write # This is required for requesting the JWT
       contents: read # This is required for actions/checkout
-
     steps:
       # Step 1: Checkout the code
       - name: STEP1-Checkout code
@@ -33,7 +34,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'  # O la versión que estés usando
+          node-version: "20" # O la versión que estés usando
 
       - name: Install dependencies
         run: |
@@ -44,7 +45,7 @@ jobs:
         run: |
           cd function
           zip -r ../function.zip ./*
-          
+
       #Step 4: Assume the testing pipeline user role
       - name: STEP4-Assume the testing pipeline user role
         uses: aws-actions/configure-aws-credentials@v3
@@ -56,10 +57,47 @@ jobs:
           role-session-name: feature-deployment
           role-duration-seconds: 3600
           role-skip-session-tagging: true
+
+      - name: STEP5-send zip to s3bucket
+        run: |
+          aws s3 cp function.zip s3://${{env.S3_BUCKET}}
+
+  deploy-lambda-dev:
+    if: github.event_name == 'push' && startsWith(github.ref,'refs/heads/develop')
+    needs: [build-s3]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read # This is required for actions/checkout
+
+    steps:
+      # Step 1: Checkout the code
+      - name: STEP1-Checkout code
+        uses: actions/checkout@v3
+
+      #Step 4: Assume the testing pipeline user role
+      - name: STEP4-Assume the testing pipeline user role
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_LAMBDA }}
+          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY_LAMBDA }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: feature-deployment
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+
+      - name: Verify object upload
+        run: |
+          aws s3api wait object-exist \
+            --bucket ${{env.S3_BUCKET}} \
+            --key function.zip \
       
-      - name: Update Lambda Function Code
+      #Step 6:
+      - name: STEP6:Update Lambda Function Code
         run: |
           aws lambda update-function-code \
             --function-name project1-lambdaUsers-6g8XUlyjMCJa \
-            --zip-file fileb://function.zip \
+            --s3-bucket ${{env.S3_BUCKET}} \
+            --s3-key function.zip \
             --region ${{ env.AWS_REGION }}
