@@ -90,9 +90,11 @@ jobs:
 
       - name: Verify object upload
         run: |
-          aws s3api wait object-exist \
+          aws s3api wait object-exists \
             --bucket ${{env.S3_BUCKET}} \
             --key function.zip \
+            --cli-connect-timeout 40 \
+            --cli-read-timeout 40
       
       #Step 6:
       - name: STEP6:Update Lambda Function Code
