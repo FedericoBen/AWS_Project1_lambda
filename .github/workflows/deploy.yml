@@ -12,10 +12,11 @@ on:
 
 env:
   AWS_REGION: us-east-1 # Cambia esto si usas otra región
-  S3_BUCKET: project1-lambda-code-532353884571
+  S3_BUCKET: basic-stack-generate-sam-lambda-code-s3-532353884571
   STACK_NAME: project1
   SAM_TEMPLATE: template.yml
   PIPELINE_EXECUTION_ROLE: arn:aws:iam::532353884571:role/PIPELINE_EXECUTION_ROLE
+  LAMBDA_FUNCTION_NAME: basic-stack-generate-sam-lambdaUsers-sOhYT7t3MfxE
 
 jobs:
 
@@ -97,7 +98,7 @@ jobs:
       - name: STEP6:Update Lambda Function Code
         run: |
           aws lambda update-function-code \
-            --function-name project1-lambdaUsers-6g8XUlyjMCJa \
+            --function-name ${{env.LAMBDA_FUNCTION_NAME}} \
             --s3-bucket ${{env.S3_BUCKET}} \
             --s3-key function.zip \
             --region ${{ env.AWS_REGION }}
